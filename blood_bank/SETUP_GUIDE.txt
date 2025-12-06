@@ -1,0 +1,242 @@
+================================================================================
+BLOOD BANK MANAGEMENT SYSTEM - QUICK SETUP GUIDE
+================================================================================
+
+STEP 1: INSTALL XAMPP
+---------------------
+1. Download XAMPP from: https://www.apachefriends.org/
+2. Install to default location: C:\xampp
+3. Open XAMPP Control Panel
+4. Start "Apache" and "MySQL" modules
+
+STEP 2: CREATE DATABASE
+-----------------------
+1. Open browser and go to: http://localhost/phpmyadmin
+2. Click "New" in left sidebar
+3. Database name: blood_bank
+4. Click "Create"
+5. Click "Import" tab
+6. Click "Choose File" and select: blood_bank.sql
+7. Click "Go" button at bottom
+8. Wait for success message
+
+STEP 3: COPY PROJECT FILES
+--------------------------
+1. Copy the entire "blood_bank" folder
+2. Paste it in: C:\xampp\htdocs\
+3. Final path should be: C:\xampp\htdocs\blood_bank\
+
+STEP 4: ACCESS APPLICATION
+--------------------------
+1. Open browser
+2. Go to: http://localhost/blood_bank
+3. You should see the home page
+
+STEP 5: LOGIN AS ADMIN
+----------------------
+1. Click "Admin Login" in navigation
+2. Username: admin
+3. Password: admin123
+4. Click Login
+
+================================================================================
+TESTING THE SYSTEM
+================================================================================
+
+TEST 1: View Blood Stock
+-------------------------
+- Click "Blood Stock" in navigation
+- You should see 8 blood groups with units
+- Stock levels are color-coded
+
+TEST 2: Register New Donor
+---------------------------
+- Click "Register as Donor"
+- Fill the form with sample data
+- Age must be 18-65
+- Phone must be 10-15 digits
+- Click Register
+
+TEST 3: Add Donation (Admin)
+-----------------------------
+- Login as admin
+- Click "Add Donation"
+- Select an eligible donor (marked with ✓)
+- Select today's date
+- Units: 1 or 2
+- Click "Add Donation"
+- Check Blood Stock - units should increase automatically!
+
+TEST 4: Request Blood
+---------------------
+- Click "Request Blood"
+- Fill patient details
+- Select blood group
+- Units required: 1-10
+- Click Submit Request
+
+TEST 5: Approve Request (Admin)
+--------------------------------
+- Login as admin
+- Click "Manage Requests"
+- Click "Approve" on a pending request
+- Check Blood Stock - units should decrease automatically!
+
+TEST 6: View Reports (Admin)
+-----------------------------
+- Login as admin
+- Click "Reports"
+- See various statistics and reports
+
+================================================================================
+SQL FEATURES TO DEMONSTRATE
+================================================================================
+
+TRIGGERS (Automatic Actions)
+-----------------------------
+1. Add donation → Stock increases automatically
+2. Approve request → Stock decreases automatically
+3. Try to add donation within 90 days → System prevents it
+4. Try to approve request with insufficient stock → System prevents it
+
+STORED PROCEDURES (In phpMyAdmin)
+----------------------------------
+Run these in SQL tab:
+
+CALL add_donation(1, '2024-11-26', 1);
+CALL approve_request(3);
+CALL reject_request(4);
+CALL get_donor_history(1);
+CALL get_stock_report();
+
+FUNCTIONS (In phpMyAdmin)
+--------------------------
+Run these in SQL tab:
+
+SELECT next_eligible_date(1);
+SELECT is_eligible_to_donate(1);
+SELECT total_donations(1);
+SELECT get_available_units('O+');
+
+VIEWS (Pre-created Tables)
+---------------------------
+Run these in SQL tab:
+
+SELECT * FROM donor_status_view;
+SELECT * FROM blood_stock_status;
+SELECT * FROM pending_requests_view;
+SELECT * FROM donation_summary_by_blood_group;
+SELECT * FROM recent_donations;
+
+COMPLEX QUERIES
+---------------
+-- Eligible donors
+SELECT * FROM donor_status_view WHERE eligibility_status = 'Eligible';
+
+-- Critical stock
+SELECT * FROM blood_stock_status WHERE stock_level = 'Critical';
+
+-- Top donors
+SELECT name, blood_group, total_donations 
+FROM donor_status_view 
+ORDER BY total_donations DESC LIMIT 5;
+
+-- Requests by status
+SELECT status, COUNT(*) as total FROM request GROUP BY status;
+
+-- Average age by blood group
+SELECT blood_group, AVG(age) as avg_age, COUNT(*) as count
+FROM donor 
+GROUP BY blood_group 
+HAVING count > 1;
+
+-- Monthly donations
+SELECT DATE_FORMAT(donation_date, '%Y-%m') as month,
+       COUNT(*) as donations,
+       SUM(units_donated) as units
+FROM donation
+GROUP BY month
+ORDER BY month DESC;
+
+================================================================================
+DEFAULT CREDENTIALS
+================================================================================
+
+Admin Accounts:
+---------------
+Username: admin      | Password: admin123
+Username: manager    | Password: manager123
+Username: supervisor | Password: super123
+
+Sample Donors (Already in database):
+-------------------------------------
+15 donors with various blood groups
+Some are eligible, some are not (based on 90-day rule)
+
+Sample Data:
+------------
+- 8 blood groups with initial stock
+- 15 donations already recorded
+- 10 blood requests (some pending, some approved)
+
+================================================================================
+TROUBLESHOOTING
+================================================================================
+
+Problem: "Connection failed"
+Solution: 
+- Check if MySQL is running in XAMPP
+- Verify database name is "blood_bank"
+
+Problem: "Table doesn't exist"
+Solution:
+- Re-import blood_bank.sql file
+- Make sure import completed successfully
+
+Problem: "Page not found"
+Solution:
+- Check files are in C:\xampp\htdocs\blood_bank\
+- Verify Apache is running
+
+Problem: Triggers not working
+Solution:
+- Check triggers exist: SHOW TRIGGERS;
+- Re-import SQL file with proper delimiter
+
+Problem: Can't login as admin
+Solution:
+- Username: admin (lowercase)
+- Password: admin123 (no spaces)
+
+================================================================================
+PROJECT HIGHLIGHTS
+================================================================================
+
+✓ 5 Tables with constraints (PK, FK, UNIQUE, CHECK)
+✓ 4 Triggers for automatic operations
+✓ 5 Stored Procedures
+✓ 4 Custom Functions
+✓ 5 Views for complex queries
+✓ JOINS (INNER, LEFT, RIGHT)
+✓ Subqueries and nested queries
+✓ Aggregations (COUNT, SUM, AVG, GROUP BY, HAVING)
+✓ Complete PHP application
+✓ Responsive design
+✓ Admin panel
+✓ Real-time stock updates
+✓ Eligibility checking
+✓ Comprehensive reports
+✓ Sample data included
+
+================================================================================
+URLS TO REMEMBER
+================================================================================
+
+Home Page:        http://localhost/blood_bank
+Admin Login:      http://localhost/blood_bank/admin/login.php
+phpMyAdmin:       http://localhost/phpmyadmin
+XAMPP Control:    C:\xampp\xampp-control.exe
+
+================================================================================
+END OF SETUP GUIDE
+================================================================================
